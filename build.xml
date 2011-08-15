@@ -1,0 +1,82 @@
+<project name="AcmeTelecom" >
+<property name="build.dir" value="build"/>
+<property name="build.prod.dir" value="${build.dir}/prod"/>
+<property name="build.test.dir" value="${build.dir}/test"/>
+<property name="build.jar.dir" value="${build.dir}/jar"/>
+<property name="src.dir" value="src"/>
+<property name="unit.test.dir" value="unit-test"/>
+<property name="system.test.dir" value="system-test"/>
+<property name="Acceptance-test.dir" value="Acceptance-test"/>
+<property name="lib.dir" value="lib"/>
+
+  <path id="classpath">
+<pathelement location="${build.prod.dir}"/>
+<pathelement location="${build.test.dir}"/>
+<fileset dir="${lib.dir}" includes="externals.jar"/>
+</path>
+
+
+<target name="prepare">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.prod.dir}"/>
+    <mkdir dir="${build.test.dir}"/>
+    <mkdir dir="${build.jar.dir}"/>
+    <mkdir dir="${src.dir}"/>
+       <mkdir dir="${unit.test.dir}"/>
+    <mkdir dir="${system.test.dir}"/>
+    <mkdir dir="${Acceptance-test.dir}"/>
+    <mkdir dir="${lib.dir}"/>
+
+
+</target>
+
+
+<!-- add  -->
+<target name="compile" depends="prepare">
+<javac srcdir="${src.dir}"
+destdir="${build.prod.dir}" classpathref="classpath"/>
+</target>
+
+
+
+  <target name="jar" depends="compile">
+<jar destfile="${build.dir}/externals.jar" basedir="${build.prod.dir}">
+<manifest>
+<attribute name="Main-Class" value="com.acmetelecom"/>
+</manifest>
+</jar>
+</target>
+
+
+    <target name="run" depends="jar">
+<java jar="${build.jar.dir}/Encrypt.jar" fork="true"/>
+</target>
+
+
+
+    <target name="clean" description="Removes all build artefacts">
+		<delete dir="build" />
+		<delete dir="reports" />
+	</target>
+
+    <target name="run-junit-tests" depends="compile">
+<junit printsummary="yes" errorproperty="test.failed" failureproperty="test.failed"  >
+<classpath refid="classpath"/>
+<formatter type="XML" usefile="false"/>
+<batchtest fork="yes" todir="${unit.test.dir}">
+<fileset dir="unit-test/" includes="**/*Test.java"/>
+</batchtest>
+</junit>
+</target>
+
+    <property name="test.report.dir" value="${build.dir}/junitreport"/>
+
+    <property name="unit.test.report.dir"
+value="${build.dir}/junitreport/unit-test"/>
+<target name="run-unit-tests" depends="compile">
+<mkdir dir="${test.report.dir}"/>
+<mkdir dir="${unit.test.report.dir}"/>
+ </target>
+
+
+</project>
